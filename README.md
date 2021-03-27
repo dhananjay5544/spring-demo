@@ -1,2 +1,2 @@
-# SRPING BOOT API
+# SPRING BOOT API
 > student API
