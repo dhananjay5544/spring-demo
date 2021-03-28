@@ -31,4 +31,19 @@ public class StudentController {
     Student getStudents(@RequestBody Student student){
         return studentService.createStudent(student);
     }
+
+    @PutMapping (path = "{id}")
+    void updateStudent(
+            @PathVariable("id") Long id,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String age
+    ){
+        studentService.updateStudent(id,firstName,lastName,age);
+    }
+
+    @DeleteMapping(path = "{id}")
+    void deleteStudent(@PathVariable("id") Long id){
+        studentService.deleteStudent(id);
+    }
 }
