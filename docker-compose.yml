@@ -1,0 +1,31 @@
+version: "3"
+services:
+  student-service:
+    container_name: student-service
+    build:
+      context: .
+    ports:
+      - 4040:4040
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/school
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=root123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    networks:
+      - spring-api-net
+  postgres:
+    container_name: postgres
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: school
+      POSTGRES_PASSWORD: root123
+    networks:
+      - spring-api-net
+networks:
+  spring-api-net:
+    driver: bridge
