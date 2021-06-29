@@ -1,0 +1,15 @@
+version: "3"
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: school
+      POSTGRES_PASSWORD: root123
+    networks:
+      - spring-api-net
+networks:
+  spring-api-net:
+    driver: bridge
