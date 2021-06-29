@@ -1,2 +1,11 @@
 server:
     port: 4040
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/school
+    username: postgres
+    password: root123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
