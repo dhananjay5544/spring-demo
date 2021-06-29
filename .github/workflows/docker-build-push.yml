@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "image tag"
+        required: true
+        default: "latest"
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    name: Running compile and test.
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Spin postgre container
+        run: docker-compose -f docker-compose-db.yml up -d
+
+      - name: Check running container
+        run: docker-compose -f docker-compose-db.yml ps
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - name: build
+        run: mvn package
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/spring-api:${{ github.event.inputs.tag }}
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
