@@ -7,7 +7,22 @@ on:
   pull_request:
     branches:
       - master
+
 jobs:
+  container-job:
+    runs-on: ubuntu-latest
+    container: node:10.18-jessie
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: root123
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
   compile-and-test:
     runs-on: ubuntu-latest
     name: Running Java compile and test.

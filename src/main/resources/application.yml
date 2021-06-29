@@ -1,8 +1,8 @@
 server:
-    port: 4040
+  port: 4040
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/school
+    url: jdbc:postgresql://postgres:5432/school
     username: postgres
     password: root123
   jpa:
