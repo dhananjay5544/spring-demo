@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Spin postgre container
+      - name: Spin postgres container
         run: docker-compose -f docker-compose-db.yml up -d
 
       - name: Check running container
