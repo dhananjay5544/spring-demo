@@ -30,7 +30,7 @@ jobs:
 
       - name: trigger deployment to dev
         run: |
-          curl -x POST \
+          curl -X POST \
               ${{ github.event.repository.deployments_url }} \
               -H 'Authorization: Bearer ${{ secrets.PERSONAL_ACCESS_TOKEN  }}' \
               -H 'Content-Type: application/json' \
