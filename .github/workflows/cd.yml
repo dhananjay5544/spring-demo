@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - master
-env:
-  IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/spring-api
-  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
   test-and-build:
@@ -44,19 +41,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Check image already exists in Repo.
-        id: check_image
-        run: |
-          if `docker pull $IMAGE:IMAGE_TAG > /dev/null`
-          then
-            echo "::set-output name=imageFlag::true"
-          else
-            echo "::set-output name=imageFlag::false"
-          fi
-
       - name: Build and push
         id: docker_build
-        if: contains(steps.check_image.outputs.imageFlag, 'false')
         uses: docker/build-push-action@v2
         with:
           context: .
