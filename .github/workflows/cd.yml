@@ -59,4 +59,4 @@ jobs:
         with:
           workflow: Trigger deployment
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          inputs: '{ "sha": "${{ github.sha }}" }'
+          inputs: '{ "environment":"internal-dev", "sha": "${{ github.sha }}", "parallel-deploy":"false" }'
