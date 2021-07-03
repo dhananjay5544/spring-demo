@@ -28,7 +28,7 @@ jobs:
           echo 'Inputs: ${{ toJSON(github.event.inputs) }}'
 
   trigger-deploy:
-    name: Trigger on ${{ github.event.inputs.environment }}
+    name: Trigger on ${{ matrix.environment.name }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -43,7 +43,7 @@ jobs:
         if: github.event.inputs.sha
         run: echo "TARGET_SHA=${{ github.event.inputs.sha }}" >> $GITHUB_ENV
 
-      - name: Trigger deployment to ${{ github.event.inputs.environment }}
+      - name: Trigger deployment to ${{ matrix.environment.name }}
         if: contains(github.event.inputs.environment,matrix.environment.name)
         run: |
           curl -X POST \
@@ -54,10 +54,11 @@ jobs:
               -d '{
                 "ref": "${{github.sha}}",
                 "required_context": [],
-                "environment": ${{ matrix.environment.environment }},
+                "environment": ${{ matrix.environment.name }},
                 "auto_merge": false,
                 "payload":{
                   "name": ${{ matrix.environment.name }},
+                  "environment": ${{ matrix.environment.environment }},
                   "parallel-deploy": ${{ github.event.inputs.parallel-deploy }},
                   "target-image": "${{ env.TARGET_SHA }}"
                 }
