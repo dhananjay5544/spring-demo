@@ -3,9 +3,16 @@ name: Trigger deployment
 on:
   workflow_dispatch:
     inputs:
+      environment:
+        description: "environment - dev, test, prod"
+        required: true
       sha:
         description: "Target image sha (default to latest commit on branch)"
-        required: true
+        required: false
+      parallel-deploy:
+        description: "Deploy in parallel? (true/false)"
+        required: false
+        default: "true"
 
 env:
   TARGET_SHA: ${{ github.sha }}
@@ -21,14 +28,23 @@ jobs:
           echo 'Inputs: ${{ toJSON(github.event.inputs) }}'
 
   trigger-deploy:
-    name: trigger on dev
+    name: Trigger on ${{ github.event.inputs.environment }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment:
+          [
+            { name: internal-dev, environment: dev },
+            { name: internal-test, environment: test },
+            { name: internal-prod, environment: prod },
+          ]
     steps:
       - name: set ref SHA
         if: github.event.inputs.sha
         run: echo "TARGET_SHA=${{ github.event.inputs.sha }}" >> $GITHUB_ENV
 
-      - name: trigger deployment to dev
+      - name: Trigger deployment to ${{ github.event.inputs.environment }}
+        if: contains(github.event.inputs.environment,matrix.environment.name)
         run: |
           curl -X POST \
               ${{ github.event.repository.deployments_url }} \
@@ -38,10 +54,11 @@ jobs:
               -d '{
                 "ref": "${{github.sha}}",
                 "required_context": [],
-                "environment": "dev",
+                "environment": ${{ matrix.environment.environment }},
                 "auto_merge": false,
                 "payload":{
-                  "name": "dev",
+                  "name": ${{ matrix.environment.name }},
+                  "parallel-deploy": ${{ github.event.inputs.parallel-deploy }},
                   "target-image": "${{ env.TARGET_SHA }}"
                 }
               }'
