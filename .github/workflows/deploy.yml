@@ -1,0 +1,12 @@
+name: Deploy to azure
+
+on: deployment
+
+jobs:
+  print-payload:
+    name: Print workflow dipatch inputs.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo inputs
+        run: |
+          echo 'Payload: ${{ toJSON(github.event.deployment.payload) }}'
