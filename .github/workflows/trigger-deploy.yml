@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "environment - dev, test, prod"
+        description: "environment - internal-dev, internal-test, internal-prod"
         required: true
       sha:
         description: "Target image sha (default to latest commit on branch)"
@@ -54,12 +54,12 @@ jobs:
               -d '{
                 "ref": "${{github.sha}}",
                 "required_context": [],
-                "environment": ${{ matrix.environment.name }},
+                "environment": "${{ matrix.environment.name }}",
                 "auto_merge": false,
                 "payload":{
-                  "name": ${{ matrix.environment.name }},
-                  "environment": ${{ matrix.environment.environment }},
-                  "parallel-deploy": ${{ github.event.inputs.parallel-deploy }},
+                  "name": "${{ matrix.environment.name }}",
+                  "environment": "${{ matrix.environment.environment }}",
+                  "parallel-deploy": "${{ github.event.inputs.parallel-deploy }}",
                   "target-image": "${{ env.TARGET_SHA }}"
                 }
               }'
