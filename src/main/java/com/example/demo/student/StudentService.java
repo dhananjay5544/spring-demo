@@ -16,7 +16,7 @@ public class StudentService {
         this.studentRepository = studentRepository;
     }
 
-    public Optional<Student> getStudent(Long id){
+    public Optional<Student> getStudent(Integer id){
         return studentRepository.findById(id);
     }
 
@@ -29,7 +29,7 @@ public class StudentService {
     }
 
     @Transactional
-    public void updateStudent(Long id,String firstName,String lastName,String age){
+    public void updateStudent(Integer id,String firstName,String lastName,String age){
         Student student = studentRepository.findById(id).orElseThrow(()->new IllegalStateException("student not found"));
         if (firstName!=null){
             student.setFirstName(firstName);
@@ -43,7 +43,8 @@ public class StudentService {
         }
     }
 
-    public void deleteStudent(Long id){
-        studentRepository.deleteById(id);
+    public void deleteStudent(Integer id){
+        Optional<Student> student = studentRepository.findById(id);
+        if (student.isPresent()) studentRepository.deleteById(id);
     }
 }
