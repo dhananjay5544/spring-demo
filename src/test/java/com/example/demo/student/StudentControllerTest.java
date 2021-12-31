@@ -1,75 +1,137 @@
 package com.example.demo.student;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.core.Is;
-import org.hamcrest.core.IsEqual;
-import org.junit.jupiter.api.AfterEach;
+import javassist.NotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.verify;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@ExtendWith(MockitoExtension.class)
 class StudentControllerTest {
 
-    @Autowired
+    @Mock
+    private StudentService studentService;
     private StudentController studentController;
 
-    @Autowired
-    private StudentRepository studentRepository;
-
     @BeforeEach
-    void insertRecords(){
-        List<Student> studentList = List.of(
-                new Student(1,"test1","test1",20),
-                new Student(2,"test2","test2",30),
-                new Student(3,"test3","test3",50),
-                new Student(4,"test4","test4",60),
-                new Student(5,"test5","test5",20)
-        );
-        studentRepository.saveAll(studentList);
+    void setUp() {
+        studentController = new StudentController(studentService);
     }
 
-    @AfterEach
-    @Transactional
-    void deleteRecords(){
-        studentRepository.deleteAll();
+    @Test
+    void getStudent() throws NotFoundException {
+        // given
+        Student student = new Student(1, "test", "test", 25);
+        given(studentService.getStudent(1)).willReturn(student);
+
+        // when
+        Student foundStudent = studentController.getStudent(1);
+
+        // assert
+        verify(studentService).getStudent(1);
+        Assertions.assertEquals(foundStudent.getId(), student.getId());
+    }
+
+    @Test
+    void getStudentThrowError() throws NotFoundException {
+        // given
+        given(studentService.getStudent(1)).willAnswer(invocationOnMock -> {
+            throw new NotFoundException("student not found");
+        });
+
+        // when
+        Student student = studentController.getStudent(1);
+
+        // assert
+        verify(studentService).getStudent(1);
+        Assertions.assertNull(student);
     }
 
     @Test
     void getStudents() {
-        List<Student> students = studentController.getStudents();
+        // when
+        studentController.getStudents();
 
-        MatcherAssert.assertThat(students.size(), Is.is(IsEqual.equalTo(5)));
-        MatcherAssert.assertThat(students.get(0).getFirstName(), Is.is(IsEqual.equalTo("test1")));
+        // assert
+        verify(studentService).getStudents();
     }
 
     @Test
     void createStudent() {
-        Student student = new Student("test","test",20);
+        // given
+        Student student = new Student("test", "test", 25);
+        given(studentService.createStudent(student)).willReturn(student);
+
+        // when
         Student newStudent = studentController.createStudent(student);
 
-        Assertions.assertNotNull(newStudent);
-        Assertions.assertNotNull(newStudent.getId());
-        Assertions.assertEquals(student.getFirstName(), newStudent.getFirstName());
+        // assert
+        verify(studentService).createStudent(student);
+        Assertions.assertEquals(newStudent.getId(), student.getId());
     }
 
     @Test
-    void updateStudent()  {
+    void updateStudent() throws NotFoundException {
+        // given
+        Student student = new Student(1, "new-firstname", "new-lastname", 26);
+        given(studentService.updateStudent(1, "new-firstname", "new-lastname", 26)).willReturn(student);
 
+        // when
+        Student updatedStudent = studentController.updateStudent(1, "new-firstname", "new-lastname", 26);
+
+        // assert
+        verify(studentService).updateStudent(1, "new-firstname", "new-lastname", 26);
+        Assertions.assertEquals(updatedStudent.getFirstName(), student.getFirstName());
+        Assertions.assertEquals(updatedStudent.getLastName(), student.getLastName());
+        Assertions.assertEquals(updatedStudent.getAge(), student.getAge());
     }
 
     @Test
-    void deleteStudent()  {
-        studentController.deleteStudent(4);
-        MatcherAssert.assertThat(studentRepository.findAll().size(), IsEqual.equalTo(4));
+    void updateStudentThrowError() throws NotFoundException {
+        // given
+        given(studentService.updateStudent(1, "new-firstname", "new-lastname", 26)).willAnswer(invocationOnMock -> {
+            throw new NotFoundException("student not found");
+        });
+
+        // when
+        Student updatedStudent = studentController.updateStudent(1, "new-firstname", "new-lastname", 26);
+
+        // assert
+        verify(studentService).updateStudent(1, "new-firstname", "new-lastname", 26);
+        Assertions.assertNull(updatedStudent);
     }
 
+    @Test
+    void deleteStudent() throws NotFoundException {
+        // given
+        given(studentService.deleteStudent(1)).willReturn("student deleted");
+
+        // when
+        String res = studentController.deleteStudent(1);
+
+        // assert
+        verify(studentService).deleteStudent(1);
+        Assertions.assertEquals(res, "student deleted");
+    }
+
+    @Test
+    void deleteStudentThrowError() throws NotFoundException {
+        // given
+        given(studentService.deleteStudent(1))
+                .willAnswer(invocationOnMock -> {
+                    throw new NotFoundException("student not found");
+                });
+
+        // when
+        String res = studentController.deleteStudent(1);
+
+        // assert
+        verify(studentService).deleteStudent(1);
+        Assertions.assertEquals(res, "student not found");
+    }
 }
