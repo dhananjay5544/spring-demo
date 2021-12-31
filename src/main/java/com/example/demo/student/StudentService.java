@@ -1,50 +1,54 @@
 package com.example.demo.student;
 
+import javassist.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@Slf4j
 public class StudentService {
     private final StudentRepository studentRepository;
+    private static final String NOT_FOUND = "student not found";
 
     @Autowired
     public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
 
-    public Optional<Student> getStudent(Integer id){
-        return studentRepository.findById(id);
+    public Student getStudent(Integer id) throws NotFoundException {
+        return studentRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND));
     }
 
-    public List<Student> getStudents(){
+    public List<Student> getStudents() {
         return studentRepository.findAll();
     }
 
-    public Student createStudent(Student student){
+    public Student createStudent(Student student) {
         return studentRepository.save(student);
     }
 
     @Transactional
-    public void updateStudent(Integer id,String firstName,String lastName,String age){
-        Student student = studentRepository.findById(id).orElseThrow(()->new IllegalStateException("student not found"));
-        if (firstName!=null){
+    public Student updateStudent(Integer id, String firstName, String lastName, Integer age) throws NotFoundException {
+        Student student = studentRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND));
+        if (firstName != null) {
             student.setFirstName(firstName);
         }
-        if (lastName!=null) {
+        if (lastName != null) {
             student.setLastName(lastName);
         }
-        if (age!=null){
-            int newAge = Integer.parseInt(age);
-            student.setAge(newAge);
+        if (age != null) {
+            student.setAge(age);
         }
+        return student;
     }
 
-    public void deleteStudent(Integer id){
-        Optional<Student> student = studentRepository.findById(id);
-        if (student.isPresent()) studentRepository.deleteById(id);
+    public String deleteStudent(Integer id) throws NotFoundException {
+        studentRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND));
+        studentRepository.deleteById(id);
+        return "student deleted";
     }
 }
