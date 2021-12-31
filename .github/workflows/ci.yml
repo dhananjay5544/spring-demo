@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Running compile and test.
+    name: CI
     steps:
       - uses: actions/checkout@v2
         with:
