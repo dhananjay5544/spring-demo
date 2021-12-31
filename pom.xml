@@ -15,12 +15,14 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>11</java.version>
+		<sonar.organization>food-app-sonarqube-key</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
-			<version>2.6.1</version>
+			<version>2.6.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
