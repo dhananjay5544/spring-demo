@@ -7,13 +7,12 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
 public class StudentService {
     private final StudentRepository studentRepository;
-    private final String not_found_error_msg = "student not found";
+    private static final String NOT_FOUND = "student not found";
 
     @Autowired
     public StudentService(StudentRepository studentRepository) {
@@ -21,7 +20,7 @@ public class StudentService {
     }
 
     public Student getStudent(Integer id) throws NotFoundException {
-        return studentRepository.findById(id).orElseThrow(() -> new NotFoundException(this.not_found_error_msg));
+        return studentRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND));
     }
 
     public List<Student> getStudents() {
@@ -34,7 +33,7 @@ public class StudentService {
 
     @Transactional
     public Student updateStudent(Integer id, String firstName, String lastName, Integer age) throws NotFoundException {
-        Student student = studentRepository.findById(id).orElseThrow(() -> new NotFoundException(this.not_found_error_msg));
+        Student student = studentRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND));
         if (firstName != null) {
             student.setFirstName(firstName);
         }
@@ -48,7 +47,7 @@ public class StudentService {
     }
 
     public String deleteStudent(Integer id) throws NotFoundException {
-        studentRepository.findById(id).orElseThrow(() -> new NotFoundException(this.not_found_error_msg));
+        studentRepository.findById(id).orElseThrow(() -> new NotFoundException(NOT_FOUND));
         studentRepository.deleteById(id);
         return "student deleted";
     }

@@ -116,7 +116,7 @@ class StudentControllerTest {
 
         // assert
         verify(studentService).deleteStudent(1);
-        Assertions.assertEquals(res, "student deleted");
+        Assertions.assertEquals("student deleted", res);
     }
 
     @Test
@@ -132,6 +132,6 @@ class StudentControllerTest {
 
         // assert
         verify(studentService).deleteStudent(1);
-        Assertions.assertEquals(res, "student not found");
+        Assertions.assertEquals("student not found", res);
     }
 }
