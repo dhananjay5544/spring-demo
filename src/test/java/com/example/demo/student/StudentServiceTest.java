@@ -119,7 +119,6 @@ class StudentServiceTest {
     }
 
     @Test
-    @Disabled
     void deleteStudentThrowError() {
         // given
         given(studentRepository.findById(1)).willAnswer(invocationOnMock -> {

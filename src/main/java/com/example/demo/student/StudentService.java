@@ -48,12 +48,8 @@ public class StudentService {
     }
 
     public String deleteStudent(Integer id) throws NotFoundException {
-        Optional<Student> student = studentRepository.findById(id);
-        if (student.isPresent()) {
-            studentRepository.deleteById(id);
-            return "student deleted";
-        } else {
-            throw new NotFoundException(this.not_found_error_msg);
-        }
+        studentRepository.findById(id).orElseThrow(() -> new NotFoundException(this.not_found_error_msg));
+        studentRepository.deleteById(id);
+        return "student deleted";
     }
 }
