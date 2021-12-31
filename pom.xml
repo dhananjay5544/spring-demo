@@ -15,7 +15,7 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>11</java.version>
-		<sonar.organization>food-app-sonarqube-key</sonar.organization>
+		<sonar.organization>mastery-sonar-key</sonar.organization>
 		<sonar.projectKey>dhananjay5544_spring-demo</sonar.projectKey>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.language>java</sonar.language>
